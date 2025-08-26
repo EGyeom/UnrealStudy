@@ -19,5 +19,7 @@ public:
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
-
+	
+	UFUNCTION(BlueprintCallable)
+	int32 SpawnCharacter();
 };
