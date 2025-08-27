@@ -3,7 +3,7 @@
 #include "GameDS_CustomData.h"
 #include <Kismet/GameplayStatics.h>
 #include "GameFramework/PlayerStart.h" // 올바른 경로로 변경
-#include "ProjectDS/Unit/HeroSpawnPoint.h"
+#include "ProjectDS/Unit/Spawner/HeroSpawnPoint.h"
 
 void UGameDS_DataManager::Initialize(FSubsystemCollectionBase& Collection)
 {
