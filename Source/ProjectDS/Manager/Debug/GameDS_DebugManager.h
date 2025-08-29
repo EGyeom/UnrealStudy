@@ -9,7 +9,6 @@ class UGameDS_DebugManager : public UGameDS_ManagerObject
 	GENERATED_BODY()
 
 public:
-	UFUNCTION()
 	virtual void Tick(float DeltaTime, UGameInstance* InGameInstance) override;
 
 };

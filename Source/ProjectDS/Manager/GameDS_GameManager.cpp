@@ -2,6 +2,7 @@
 
 
 #include "GameDS_GameManager.h"
+#include "ProjectDS/GameInstanceHolder.h"
 #include "Object/GameDS_ManagerObject.h"
 
 UGameDS_GameManager::UGameDS_GameManager()
@@ -31,7 +32,7 @@ void UGameDS_GameManager::Tick(float DeltaTime)
 {
 	for(UGameDS_ManagerObject* ManagerObject : ManagerObjectList)
 	{
-		ManagerObject->Tick(DeltaTime);
+		ManagerObject->Tick(DeltaTime, FGameInstanceHolder::GetGameInstance());
 	}
 }
 

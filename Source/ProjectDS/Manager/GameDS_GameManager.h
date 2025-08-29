@@ -6,7 +6,6 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameDS_GameManager.generated.h"
 
-
 class UGameDS_ManagerObject;
 
 /**
