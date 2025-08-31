@@ -27,7 +27,7 @@ public:
 	const DataStruct GetDataInRow(int32 DataID);
 
 	//Data Getter
-	const FGameDS_SpawnData* GetSpawnData(); const;
+	const FGameDS_SpawnData* GetSpawnData(const FGameDS_UnitSpawnOption& SpawnOption); const;
 	const UGameDS_HeroStatConfigData* GetHeroStatConfigData(); const;
 	void GetHeroStatConfigData(FGameDS_UnitStatInfo& UnitStatInfo, FGameDS_HeroStatInfo& HeroStatInfo);
 	void GetHeroCreateData(FGameDS_HeroCreateInfo& HeroCreateInfo);

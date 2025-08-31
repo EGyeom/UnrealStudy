@@ -10,6 +10,45 @@ void UGameDS_DataManager::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 
 	SpawnUnitData = LoadObject<UGameDS_SpawnUnitData>(nullptr, *SpawnUnitDataPath.GetAssetPathString());
+	HeroStatConfigData = LoadObject<UGameDS_HeroStatConfigData>(nullptr, *HeroStatConfigDataPath.GetAssetPathString());
+	DefaultHeroSetting = LoadObject<UGameDS_DefaultHeroSetting>(nullptr, *DefaultHeroSettingDataPath.GetAssetPathString());
+
+	EnemyStatConfigData = LoadObject<UDataTable>(nullptr, *EnemyStatConfigDataPath.GetAssetPathString());
+	HeroSkillData = LoadObject<UDataTable>(nullptr, *HeroSkillDataPath.GetAssetPathString());
+	EnemySkillData = LoadObject<UDataTable>(nullptr, *EnemySkillDataPath.GetAssetPathString());
+	HeroSkillInfoData = LoadObject<UDataTable>(nullptr, *HeroSkillInfoDataPath.GetAssetPathString());
+	EnemySkillInfoData = LoadObject<UDataTable>(nullptr, *EnemySkillInfoDataPath.GetAssetPathString());
+	
+	CollisionInfoData = LoadObject<UDataTable>(nullptr, *CollisionInfoDataPath.GetAssetPathString());
+	EnemySkillSettingData = LoadObject<UDataTable>(nullptr, *EnemySkillSettingDataPath.GetAssetPathString());
+	SkillSetData = LoadObject<UDataTable>(nullptr, *SkillSetPath.GetAssetPathString());
+	HeroSkillSetData = LoadObject<UDataTable>(nullptr, *HeroSkillSetPath.GetAssetPathString());
+
+	CrowdControlInfoData = LoadObject<UDataTable>(nullptr , *CrowdControlInfoDataPath.GetAssetPathString());
+	StatusEffectInfoData = LoadObject<UDataTable>(nullptr, *StatusEffectInfoDataPath.GetAssetPathString());
+
+	SummonData = LoadObject<UDataTable>(nullptr, *SummonDataPath.GetAssetPathString());
+	WeaponData = LoadObject<UDataTable>(nullptr, *WeaponDataPath.GetAssetPathString());
+	PotionData = LoadObject<UDataTable>(nullptr, *PotionDataPath.GetAssetPathString());
+
+	InitSkillData();
+	InitSkillInfoData();
+	InitItemData();
+
+	
+	AddDataTable<FGameDS_EnemyStatConfigDataTable>(EnemyStatConfigData);
+	AddDataTable<FGameDS_SkillDataTable>(SkillData);
+	AddDataTable<FGameDS_SkillInfoDataTable>(SkillInfoData);
+	AddDataTable<FGameDS_CollisionInfoDataTable>(CollisionInfoData);
+	AddDataTable<FGameDS_EnemySkillSettingDataTable>(EnemySkillSettingData);
+	AddDataTable<FGameDS_ItemDataTable>(ItemData);
+	AddDataTable<FGameDS_SkillSetDataTable>(SkillSetData);
+	AddDataTable<FGameDS_HeroSkillSetDataTable>(HeroSkillSetData);
+	AddDataTable<FGameDS_SummonDataTable>(SummonData);
+	AddDataTable<FGameDS_WeaponDataTable>(WeaponData);
+	AddDataTable<FGameDS_PotionDataTable>(PotionData);
+	AddDataTable<FGameDS_CrowdControlInfoDataTable>(CrowdControlInfoData);
+	AddDataTable<FGameDS_StatusEffectInfoDataTable>(StatusEffectInfoData);
 }
 
 void UGameDS_DataManager::Deinitialize()
@@ -17,35 +56,40 @@ void UGameDS_DataManager::Deinitialize()
 	Super::Deinitialize();
 }
 
-const FGameDS_SpawnData* UGameDS_DataManager::GetSpawnData()
+const FGameDS_SpawnData* UGameDS_DataManager::GetSpawnData(const FGameDS_UnitSpawnOption& SpawnOption) const
 {
+	if(SpawnOption.UnitType == EGameDS_UnitType::None)
+		return nullptr;
 	if(SpawnUnitData == nullptr)
 		return nullptr;
 
-	FGameDS_SpawnData& Data = SpawnUnitData->SpawnDataList[0];
-	return &Data;
+	for (const FGameDS_SpawnData& Data : SpawnUnitData->SpawnDataList)
+	{
+		if(Data.UnitType != SpawnOption.UnitType)
+			continue;
+
+		if(Data.DataID != SpawnOption.DataID)
+			continue;
+		
+		if(Data.CharacterBP.Get() == nullptr)
+			break;
+		
+		return &Data;
+	}
+
+	return nullptr;
 }
 
-const FTransform UGameDS_DataManager::GetSpawnPointTransform(int32 PointNum)
+const UGameDS_HeroStatConfigData* UGameDS_DataManager::GetHeroStatConfigData() const
 {
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHeroSpawnPoint::StaticClass(), FoundActors);
+	return HeroStatConfigData;
+}
 
-	if (FoundActors.IsEmpty())
+void UGameDS_DataManager::GetHeroStatConfigData(FGameDS_UnitStatInfo& UnitStatInfo, FGameDS_HeroStatInfo& HeroStatInfo) const
+{
+	if (HeroStatConfigData)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No actors found in the world."));
+		UnitStatInfo = HeroStatConfigData->GetUnitStatInfo();
+		HeroStatInfo = HeroStatConfigData->GetHeroStatInfo();
 	}
-	else
-	{
-		for (AActor* Actor : FoundActors)
-		{
-			AHeroSpawnPoint* SpawnPoint = Cast<AHeroSpawnPoint>(Actor);
-			if (SpawnPoint == nullptr)
-				return FTransform::Identity;
-
-			if (SpawnPoint->SpawnPoint == PointNum)
-				return SpawnPoint->GetTransform();
-		}
-	}
-	return FTransform::Identity;
 }
