@@ -21,5 +21,5 @@ public:
 	virtual void Deinitialize() override;
 	
 	UFUNCTION(BlueprintCallable)
-	int32 SpawnCharacter();
+	int32 SpawnCharacter(const FGameDS_UnitSpawnOption& InSpawnOption);
 };

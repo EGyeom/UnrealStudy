@@ -50,7 +50,7 @@ enum class EGameDS_HeroActionType : uint8
     ChangeItem,
     DrinkPotion,
     Interaction
-}
+};
 
 enum class EGameDS_StatType : uint8
 {
@@ -87,7 +87,7 @@ enum class EGameDS_GenderType : uint8
     Male,
     Female,
     Other
-}
+};
 
 USTRUCT(BlueprintType)
 struct FGameDS_UnitStatInfo
@@ -108,7 +108,7 @@ struct FGameDS_UnitStatInfo
 };
 
 USTRUCT(BlueprintType)
-struct FGameDS_HeroStatInfo : FGameDS_UnitStatInfo
+struct FGameDS_HeroStatInfo : public FGameDS_UnitStatInfo
 {
     GENERATED_BODY()
 
@@ -156,7 +156,7 @@ struct FGameDS_HeroCreateInfo
     TArray<FString> InventoryItemList;
 
     TArray<FString> HeroStatList;
-}
+};
 
 USTRUCT(BlueprintType)
 struct FGameDS_UnitSpawnOption
@@ -171,10 +171,10 @@ struct FGameDS_UnitSpawnOption
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     int32 DataID = INDEX_NONE;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     int32 SpawnPoint = INDEX_NONE;
-    
+
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     FVector SpawnLocation = FVector::ZeroVector;
@@ -185,7 +185,7 @@ struct FGameDS_UnitSpawnOption
     bool bBattleMode = false;
     bool bUsePatrol = false;
     TArray<FVector> SplinePathPoints;
-}
+};
 
 struct FGameDS_SummonUnitSpawnOption
 {
@@ -196,7 +196,7 @@ struct FGameDS_SummonUnitSpawnOption
 
     FVector SpawnLocation = FVector::ZeroVector;
     FRotator SpawnRotation = FRotator::ZeroRotator;
-}
+};
 
 
 struct FGameDS_DamageInfo
@@ -207,7 +207,7 @@ struct FGameDS_DamageInfo
     EGameDS_DamageType DamageType = EGameDS_DamageType::None;
     FVector HitLocation = FVector::ZeroVector;
     FVector HitNormal = FVector::ZeroVector;
-}
+};
 
 
 UENUM(BlueprintType)

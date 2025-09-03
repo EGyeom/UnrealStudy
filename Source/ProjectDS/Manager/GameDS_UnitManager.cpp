@@ -20,21 +20,19 @@ void UGameDS_UnitManager::Deinitialize()
 	Super::Deinitialize();
 }
 
-int32 UGameDS_UnitManager::SpawnCharacter()
+int32 UGameDS_UnitManager::SpawnCharacter(const FGameDS_UnitSpawnOption& InSpawnOption)
 {
 	UGameDS_DataManager* DataManager = UGameInstance::GetSubsystem<UGameDS_DataManager>(GetGameInstance());
 
 	if (DataManager != nullptr)
 	{
-		const FGameDS_SpawnData* SpawnData = DataManager->GetSpawnData();
-		const FTransform& SpawnDataTransform = DataManager->GetSpawnPointTransform(1);
-		const FVector SpawnPositon = SpawnDataTransform.GetLocation();
-		const FRotator SpawnDataRotator = SpawnDataTransform.Rotator();
+		FGameDS_UnitSpawnOption Option;
+		const FGameDS_SpawnData* SpawnData = DataManager->GetSpawnData(InSpawnOption);
 		if (SpawnData == nullptr)
 			return INDEX_NONE;
 
-		AActor* Actor = GetWorld()->SpawnActor(SpawnData->CharacterBP, &SpawnPositon, &SpawnDataRotator);
-	
+		AActor* Actor = GetWorld()->SpawnActor(SpawnData->CharacterBP, &InSpawnOption.SpawnLocation, &InSpawnOption.SpawnRotation);
+
 	}
 	return INDEX_NONE;
 }

@@ -4,11 +4,27 @@
 #include "CoreMinimal.h"
 #include "ProjectDS/Unit/GameDS_UnitDefine.h"
 #include "ProjectDS/Skill/GameDS_SkillDefine.h"
+#include "Engine/DataAsset.h"
+#include "Engine/DataTable.h"
 #include "GameDS_CustomData.generated.h"
 
 class ACharacter;
 class AGameDS_Summon;
 enum class EGameDS_HeroActionState : uint8;
+class UGameDS_UnitAnimInstance;
+
+
+UENUM(BlueprintType)
+enum class EGameDS_HeroActionState : uint8
+{
+	None = 0,
+	Attack,
+	Evade,
+	Run,
+	Defense,
+	StrongAttack
+};
+
 
 USTRUCT(BlueprintType)
 struct FGameDS_SpawnData
@@ -37,18 +53,52 @@ public:
 	UPROPERTY(EditAnywhere)
 	TArray<FGameDS_SpawnData> SpawnDataList;
 };
+UCLASS(Blueprintable, BlueprintType)
+class UGameDS_HeroStatConfigData : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameDS_UnitStatInfo UnitStatInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameDS_HeroStatInfo HeroStatInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameDS_HeroCreateInfo HeroCreateInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<EGameDS_HeroActionState, float> RequiredActionStamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float RestoredStaminaLockDuration = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ExhaustionDuration = 0.0f;
+};
 
 USTRUCT(BlueprintType)
-struct FGameDS_HeroStatConfigDataTable : public FTableRowBase
+struct FGameDS_EnemyBattleModeSetting
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameDS_HeroStatInfo HeroStatInfo;
+	float ChangeModeDelay = 1.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameDS_HeroCreateInfo HeroCreateInfo;
+	FVector2D BattleModeRange;
 };
+
+UENUM(BlueprintType)
+enum class EGameDS_EnemyBattleModeType : uint8
+{
+	None = 0,
+	NoneBattleMode,
+	NormalAttackMode,
+	RangedAttackMode,
+	BossSecondPhaseMode,
+	Num
+};
+
 
 USTRUCT(BlueprintType)
 struct FGameDS_EnemyStatConfigDataTable : public FTableRowBase
@@ -156,7 +206,7 @@ enum class EGameDS_EnemySkillType : uint8
 	None = 0,
 	Normal,
 	ForwardSpecial,
-	BackwardSpecial
+	BackwardSpecial,
 	FaceOff,
 	Num,
 };
@@ -285,6 +335,16 @@ enum class EGameDS_WeaponType : uint8
 	LongSword
 };
 
+USTRUCT(BlueprintType)
+struct FGameDS_HeroSkillSetDataTable : public FGameDS_SkillSetDataTable
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EGameDS_WeaponType WeaponType;
+};
+
+
 UENUM(BlueprintType)
 enum class EGameDS_WeaponSpawnType : uint8
 {
@@ -401,4 +461,58 @@ struct FGameDS_CrowdControlInfoDataTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameDS_CrowdControlData CrowdControlData;
+};
+
+UENUM(BlueprintType)
+enum class EGameDS_StatusEffectType : uint8
+{
+	None = 0,
+	Invincibility,
+	Num
+};
+
+USTRUCT(BlueprintType)
+struct FGameDS_StatusEffectInfoDataTable : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName StatusEffectName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EGameDS_StatusEffectType StatusEffectType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TotalDuration = INDEX_NONE;
+};
+
+UCLASS(Blueprintable, BlueprintType)
+class UGameDS_DefaultHeroSetting : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(Category = "Sword", EditAnywhere, BlueprintReadWrite)
+	int32 SwordLHandWeaponDataID = INDEX_NONE;
+
+	UPROPERTY(Category = "Sword", EditAnywhere, BlueprintReadWrite)
+	int32 SwordRHandWeaponDataID = INDEX_NONE;
+
+	UPROPERTY(Category = "Axe", EditAnywhere, BlueprintReadWrite)
+	int32 AxeLHandWeaponDataID = INDEX_NONE;
+
+	UPROPERTY(Category = "Axe", EditAnywhere, BlueprintReadWrite)
+	int32 AxeRHandWeaponDataID = INDEX_NONE;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 PotionDataID = INDEX_NONE;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<int32> InventoryItemID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameDS_HeroStatInfo HeroStatInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameDS_UnitStatInfo UnitStatInfo;
 };

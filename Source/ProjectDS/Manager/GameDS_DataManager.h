@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "ProjectDS/Unit/GameDS_UnitDefine.h"
+#include "ProjectDS/Manager/GameDS_CustomData.h"
+#include "Templates/Casts.h"
 #include "GameDS_DataManager.generated.h"
 
 
@@ -22,14 +25,14 @@ public:
 	virtual void Deinitialize() override;
 
 	template <typename DataStruct>
-	const UDataTable* GetDataTable() const;
+	const UDataTable* GetDataTable();
 	template <typename DataStruct>
-	const DataStruct GetDataInRow(int32 DataID);
+	const DataStruct* GetDataInRow(int32 DataID);
 
 	//Data Getter
-	const FGameDS_SpawnData* GetSpawnData(const FGameDS_UnitSpawnOption& SpawnOption); const;
-	const UGameDS_HeroStatConfigData* GetHeroStatConfigData(); const;
-	void GetHeroStatConfigData(FGameDS_UnitStatInfo& UnitStatInfo, FGameDS_HeroStatInfo& HeroStatInfo);
+	const FGameDS_SpawnData* GetSpawnData(const FGameDS_UnitSpawnOption& SpawnOption) const;
+	const UGameDS_HeroStatConfigData* GetHeroStatConfigData() const;
+	void GetHeroStatConfigData(FGameDS_UnitStatInfo& UnitStatInfo, FGameDS_HeroStatInfo& HeroStatInfo) const;
 	void GetHeroCreateData(FGameDS_HeroCreateInfo& HeroCreateInfo);
 	void GetEnemyStatConfigData(int32 InDataID, FGameDS_UnitStatInfo& UnitStatInfo);
 	const FGameDS_SkillDataTable* GetSkillData(int32 InSkillID) const;
@@ -75,10 +78,10 @@ public:
 private:
 	template <typename DataStruct>
 	void AddDataTable(UDataTable* DataTable);
-
+	//Init
+	void LoadAllDataTables();
 	void InitSkillData();
 	void InitSkillInfoData();
-
 	void InitItemData();
 
 	// DataAsset
@@ -100,88 +103,45 @@ private:
 	// DataTable
 	UPROPERTY(Config)
 	FSoftClassPath EnemyStatConfigDataPath;
-	UPROPERTY()
-	UDataTable* EnemyStatConfigData;
-	
+
 	UPROPERTY(Config)
 	FSoftClassPath HeroSkillDataPath;
-	UPROPERTY()
-	UDataTable* HeroSkillData;
-	
+
 	UPROPERTY(Config)
 	FSoftClassPath EnemySkillDataPath;
-	UPROPERTY()
-	UDataTable* EnemySkillData;
 
 	UPROPERTY(Config)
 	FSoftClassPath HeroSkillInfoDataPath;
-	UPROPERTY()
-	UDataTable* HeroSkillInfoData;
 
 	UPROPERTY(Config)
 	FSoftClassPath EnemySkillInfoDataPath;
-	UPROPERTY()
-	UDataTable* EnemySkillInfoData;
-
-	// common
-	UPROPERTY()
-	UDataTable* SkillData;
-	
-	UPROPERTY()
-	UDataTable* SkillInfoData;
-	//
 
 	UPROPERTY(Config)
 	FSoftClassPath CollisionInfoDataPath;
-	UPROPERTY()
-	UDataTable* CollisionInfoData;
 	
 	UPROPERTY(Config)
 	FSoftClassPath EnemySkillSettingDataPath;
-	UPROPERTY()
-	UDataTable* EnemySkillSettingData;
-
-	// common
-	UPROPERTY()
-	UDataTable* ItemData;
-	//
 
 	UPROPERTY(Config)
 	FSoftClassPath SkillSetPath;
-	UPROPERTY()
-	UDataTable* SkillSetData;
 
 	UPROPERTY(Config)
 	FSoftClassPath HeroSkillSetPath;
-	UPROPERTY()
-	UDataTable* HeroSkillSetData;
-
 
 	UPROPERTY(Config)
 	FSoftClassPath SummonDataPath;
-	UPROPERTY()
-	UDataTable* SummonData;
-
 
 	UPROPERTY(Config)
 	FSoftClassPath WeaponDataPath;
-	UPROPERTY()
-	UDataTable* WeaponData;
 
 	UPROPERTY(Config)
 	FSoftClassPath PotionDataPath;
-	UPROPERTY()
-	UDataTable* PotionData;
 
 	UPROPERTY(Config)
 	FSoftClassPath CrowdControlInfoDataPath;
-	UPROPERTY()
-	UDataTable* CrowdControlInfoData;
 
 	UPROPERTY(Config)
 	FSoftClassPath StatusEffectInfoDataPath;
-	UPROPERTY()
-	UDataTable* StatusEffectInfoData;
 
 	int32 LastItemSerialID = INDEX_NONE;
 	TArray<int32> ItemSerialIDList;
@@ -191,6 +151,7 @@ private:
 
 	UPROPERTY()
 	FGameDS_HeroCreateInfo HeroCreateInfo;
+	//HeroCreateInfo Set Flag로 LoadHeroData 변경하자
 };
 
 template <typename DataStruct>
@@ -206,7 +167,7 @@ const DataStruct* UGameDS_DataManager::GetDataInRow(int32 DataID)
 	const UDataTable* FindData = GetDataTable<DataStruct>();
 	if (FindData)
 	{
-		return FindData->FindRow<DataStruct>(FName(*FString::Printf(TEXT("%d"), DataID)), TEXT(""));
+		return FindData->FindRow<DataStruct>(FName(FString::FromInt(DataID)), TEXT(""));
 	}
 	return nullptr;
 }
